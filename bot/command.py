@@ -6,7 +6,7 @@ from functools import partial
 
 import structlog
 
-from bot import hook
+from bot import napcat
 from bot.schemas import Event
 
 
@@ -112,10 +112,20 @@ async def run_command(router: CommandRouter, event: Event):
                 reply_message = await func(**route.func_kwargs)
             else:
                 reply_message = func(**route.func_kwargs)
-            await hook.reply(event.to, event.is_room, reply_message)
+            await napcat.send_message(
+                reply_message,
+                event.user_id,
+                event.group_id,
+                event.message_type,
+            )
         except Exception:
             import traceback
 
             log.error(traceback.format_exc())
             reply_message = "哼哼~~~出错了"
-            await hook.reply(event.to, event.is_room, reply_message)
+            await napcat.send_message(
+                reply_message,
+                event.user_id,
+                event.group_id,
+                event.message_type,
+            )
