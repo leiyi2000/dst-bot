@@ -13,7 +13,7 @@ services:
     image: mlikiowa/napcat-docker:latest
     restart: always
     environment:
-      - ACCOUNT=2457738122
+      - ACCOUNT=1811992125
       - HTTP_ENABLE=true
       - HTTP_POST_ENABLE=true
       - HTTP_URLS=["http://dst-bot:8000/event"]
