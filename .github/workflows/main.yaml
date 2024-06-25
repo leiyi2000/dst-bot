@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: 
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v2
+      with:
+        path: code
+
+    - name: Install Rsync
+      run: sudo apt-get install -y rsync
+
+    - name: Setup SSH 1
+      run: mkdir -p ~/.ssh
+
+    - name: Setup SSH 2
+      run: ssh-keyscan -p 6000 ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Setup SSH 3
+      run: echo ${{ secrets.SSH_PUB_KEY }} >> ~/.ssh/id_rsa.pub
+
+    - name: Setup SSH 4
+      run: echo '${{ secrets.SSH_PRIVATE_KEY }}' >> ~/.ssh/id_rsa
+
+    - name: Setup SSH 5
+      run: chmod 600 ~/.ssh/id_rsa && chmod 644 ~/.ssh/id_rsa.pub
+    
+    - name: Create Dir
+      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "mkdir -p /home/ylei01/apps/dst-bot"
+
+    - name: Sync files
+      run: |
+        rsync -av --delete --exclude='.*' --exclude='data' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
+
+    - name: Run
+      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "export IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d') && cd /home/ylei01/apps/dst-bot && docker compose up -d"

@@ -1,17 +1,21 @@
 version: "3"
 services:
+  dst-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dst-bot:${IMAGE_TAG:-latest}
+    restart: always
+    environment:
+      - NAPCAT_API=http://napcat:3000
   napcat:
     container_name: napcat
     image: mlikiowa/napcat-docker:latest
     restart: always
     environment:
-      - ACCOUNT=1811992125
+      - ACCOUNT=2457738122
       - HTTP_ENABLE=true
       - HTTP_POST_ENABLE=true
-      - HTTP_URLS=["http://10.10.77.57:8000/event"]
+      - HTTP_URLS=["http://dst-bot:8000/event"]
     volumes:
-      - ${PWD}/data/napcat/config:/usr/src/app/napcat/config
       - ${PWD}/data/napcat/qq:/root/.config/QQ
-    ports:
-      - "3000:3000"
-      - "6099:6099"

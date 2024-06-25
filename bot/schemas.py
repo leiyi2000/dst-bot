@@ -12,8 +12,14 @@ class TextMessage(BaseModel):
     text: str
 
 
+class ImageMessage(BaseModel):
+    file: str
+    url: str
+    file_size: str
+
+
 class Message(BaseModel):
-    type: Literal["file", "text"]
+    type: Literal["file", "text", "image"]
     data: FileMessage | TextMessage
 
 

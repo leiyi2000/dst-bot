@@ -6,14 +6,8 @@ from bot.schemas import Message
 from bot.settings import NAPCAT_API
 
 
-async def send_file(
-    url: str,
-    filename: str,
-    user_id: int | None = None,
-    group_id: int | None = None,
-    message_type: Literal["private", "group"] = "group",
-):
-    """发文件.
+async def download_file(url: str):
+    """下载文件.
 
     Args:
         url (str): 文件下载地址.
@@ -23,24 +17,11 @@ async def send_file(
         message_type (Literal["private", "group"]): 消息类型.
     """
     async with httpx.AsyncClient() as client:
-        payload = {
-            "url": url,
-        }
-        response = await client.post(f"{NAPCAT_API}/download_file", json=payload)
-        file = response.json()["data"]["file"]
-        message = {
-            "type": "file",
-            "data": {
-                "file": file,
-                "name": filename,
-            },
-        }
-        await send_message(
-            message=message,
-            user_id=user_id,
-            group_id=group_id,
-            message_type=message_type,
+        payload = {"url": url}
+        response = await client.post(
+            f"{NAPCAT_API}/download_file", json=payload, timeout=600
         )
+        return f'file://{response.json()["data"]["file"]}'
 
 
 async def send_message(
@@ -65,7 +46,7 @@ async def send_message(
             },
         }
     elif isinstance(message, Message):
-        message = message.model_dump()
+        message = message.model_dump(mode="json")
     async with httpx.AsyncClient() as client:
         payload = {
             "message_type": message_type,
@@ -73,5 +54,7 @@ async def send_message(
             "group_id": group_id,
             "message": message,
         }
-        response = await client.post(f"{NAPCAT_API}/send_msg", json=payload)
+        response = await client.post(
+            f"{NAPCAT_API}/send_msg", json=payload, timeout=600
+        )
     return response.json()

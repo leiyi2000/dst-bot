@@ -21,21 +21,24 @@ class CommandRoute:
         name: str,
         pattern: re.Pattern,
         func: Callable[..., Any],
-        event_arg: bool,
-        limit_room: bool,
+        inject_event: bool,
+        limit_group: bool,
         func_kwargs: Dict[str, Any],
     ) -> None:
         self.name = name
         self.pattern = pattern
         self.func = func
-        self.event_arg = event_arg
-        self.limit_room = limit_room
+        self.inject_event = inject_event
+        self.limit_group = limit_group
         self.func_kwargs = func_kwargs
 
     def match(self, event: Event) -> bool:
-        if self.limit_room and not event.is_room:
+        if self.limit_group and event.message_type == "private":
             return False
-        return self.pattern.fullmatch(event.content) is not None
+        for message in event.message:
+            if message.type == "text" and self.pattern.fullmatch(message.data.text):
+                return True
+        return False
 
 
 class CommandRouter:
@@ -52,8 +55,8 @@ class CommandRouter:
         pattern: str,
         *,
         name: str = None,
-        limit_room: bool = False,
-        event_arg: bool = True,
+        limit_group: bool = False,
+        inject_event: bool = True,
         func_kwargs: Dict[str, Any] = {},
     ):
         """command装饰器
@@ -62,8 +65,8 @@ class CommandRouter:
             pattern (str): 指令正则匹配.
             func (Callable[..., Any]): 命令处理函数.
             name (str, optional): 名称.
-            limit_room (bool, optional): True 限制只能处理群消息.
-            event_arg (bool, optional): True 传递event参数到func.
+            limit_group (bool, optional): True 限制只能处理群消息.
+            inject_event (bool, optional): True 传递event参数到func.
             func_kwargs (Dict[str, Any], optional): func额外参数.
         """
 
@@ -73,8 +76,8 @@ class CommandRouter:
                 name or getattr(func, "__name__", "unknown"),
                 re.compile(pattern),
                 func,
-                event_arg,
-                limit_room,
+                inject_event,
+                limit_group,
                 func_kwargs,
             )
             self.add_route(route)
@@ -105,7 +108,7 @@ async def run_command(router: CommandRouter, event: Event):
     route = router.match(event)
     if route is not None:
         func = route.func
-        if route.event_arg:
+        if route.inject_event:
             func = partial(func, event)
         try:
             if asyncio.iscoroutinefunction(func):
