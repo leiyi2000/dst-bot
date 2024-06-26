@@ -8,7 +8,7 @@ from bot.schemas import Event, Message, FileMessage
 router = CommandRouter()
 
 
-@router.command("备份*")
+@router.command("备份.*+")
 async def backup(event: Event):
     name = event.match_text.removeprefix("备份").strip()
     dst_server = await models.DSTServer.filter(name=name).first()
