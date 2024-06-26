@@ -7,7 +7,7 @@ from bot.command import CommandRouter
 router = CommandRouter()
 
 
-@router.command("ls")
+@router.command("ls", inject_event=False)
 async def ls():
     reply_message = ""
     async with httpx.AsyncClient() as client:
