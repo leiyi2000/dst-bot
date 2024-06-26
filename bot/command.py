@@ -6,8 +6,8 @@ from functools import partial
 
 import structlog
 
-from bot import napcat
 from bot.schemas import Event
+from bot import napcat, models
 
 
 log = structlog.get_logger()
@@ -22,6 +22,7 @@ class CommandRoute:
         pattern: re.Pattern,
         func: Callable[..., Any],
         inject_event: bool,
+        limit_admin: bool,
         limit_group: bool,
         func_kwargs: Dict[str, Any],
     ) -> None:
@@ -29,15 +30,20 @@ class CommandRoute:
         self.pattern = pattern
         self.func = func
         self.inject_event = inject_event
+        self.limit_admin = limit_admin
         self.limit_group = limit_group
         self.func_kwargs = func_kwargs
 
-    def match(self, event: Event) -> bool:
+    async def match(self, event: Event) -> bool:
         if self.limit_group and event.message_type == "private":
             return False
         for message in event.message:
             if message.type == "text" and self.pattern.fullmatch(message.data.text):
+                event.match_text = message.data.text
                 return True
+        if self.limit_admin:
+            user = await models.Admin.get_or_none(uid=event.user_id)
+            return user is not None
         return False
 
 
@@ -55,6 +61,7 @@ class CommandRouter:
         pattern: str,
         *,
         name: str = None,
+        limit_admin: bool = False,
         limit_group: bool = False,
         inject_event: bool = True,
         func_kwargs: Dict[str, Any] = {},
@@ -77,6 +84,7 @@ class CommandRouter:
                 re.compile(pattern),
                 func,
                 inject_event,
+                limit_admin,
                 limit_group,
                 func_kwargs,
             )
@@ -85,12 +93,9 @@ class CommandRouter:
 
         return decorator
 
-    def matches(self, event: Event) -> List[CommandRoute]:
-        return [route for route in self.routes if route.match(event)]
-
-    def match(self, event: Event) -> CommandRoute | None:
+    async def match(self, event: Event) -> CommandRoute | None:
         for route in self.routes:
-            if route.match(event):
+            if await route.match(event):
                 return route
 
     def include_router(self, router: "CommandRouter"):
@@ -105,7 +110,7 @@ async def run_command(router: CommandRouter, event: Event):
         router (CommandRouter): 命令路由器.
         event (Event): 消息事件.
     """
-    route = router.match(event)
+    route = await router.match(event)
     if route is not None:
         func = route.func
         if route.inject_event:

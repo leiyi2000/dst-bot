@@ -29,3 +29,5 @@ class Event(BaseModel):
     message_type: Literal["private", "group"]
     message: List[Message]
     time: int
+    # 匹配上的指令消息
+    match_text: str | None = None

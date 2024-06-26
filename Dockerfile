@@ -22,6 +22,6 @@ RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY ./bot /app/bot
-# COPY ./migrations /app/migrations
+COPY ./migrations /app/migrations
 
 CMD ["uvicorn", "bot.main:app", "--host", "0.0.0.0", "--port", "8000"]

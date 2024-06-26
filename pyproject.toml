@@ -113,3 +113,8 @@ dev.env_file.override = ".env"
 dev.cmd = "uvicorn bot.main:app --host 0.0.0.0 --port 8000 --reload"
 # 安装后运行
 post_install = "pre-commit install"
+
+[tool.aerich]
+tortoise_orm = "bot.settings.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."

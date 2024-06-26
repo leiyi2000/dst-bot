@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from bot.api import event
+from bot.api import event, dst
 
 
 router = APIRouter()
@@ -17,4 +17,10 @@ router.include_router(
     event.router,
     prefix="/event",
     tags=["事件上报"],
+)
+
+router.include_router(
+    dst.router,
+    prefix="/dst",
+    tags=["DST"],
 )
