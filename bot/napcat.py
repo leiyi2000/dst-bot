@@ -1,9 +1,13 @@
 from typing import Literal
 
 import httpx
+import structlog
 
 from bot.schemas import Message
 from bot.settings import NAPCAT_API
+
+
+log = structlog.get_logger()
 
 
 async def download_file(url: str):
@@ -54,7 +58,10 @@ async def send_message(
             "group_id": group_id,
             "message": message,
         }
+        log.info(f"[send_message]: {payload}")
         response = await client.post(
-            f"{NAPCAT_API}/send_msg", json=payload, timeout=600
+            f"{NAPCAT_API}/send_msg",
+            json=payload,
+            timeout=600,
         )
     return response.json()
