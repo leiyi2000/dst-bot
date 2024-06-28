@@ -14,10 +14,7 @@ async def ls():
         async for dst_server in models.DSTServer.all():
             url = f"{dst_server.endpoint}/deploy/{dst_server.cluster_id}"
             response = await client.get(url)
-            # 解析获取存档名
             cluster = response.json()
-            if cluster["status"] != "running":
-                continue
             status = "运行" if cluster["status"] != "running" else "停止"
             line = f'{cluster["content"]["ini"]["cluster_name"]} {status}\n'
             reply_message += line
