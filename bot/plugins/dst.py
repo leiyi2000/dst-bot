@@ -19,6 +19,6 @@ async def ls():
             if cluster["status"] != "running":
                 continue
             status = "运行" if cluster["status"] != "running" else "停止"
-            line = f"{cluster["content"]["ini"]["cluster_name"]} {status}\n"
+            line = f'{cluster["content"]["ini"]["cluster_name"]} {status}\n'
             reply_message += line
     return reply_message
