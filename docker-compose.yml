@@ -8,6 +8,9 @@ services:
     restart: always
     environment:
       - NAPCAT_API=http://napcat:3000
+      - DATABASE_URL=sqlite:/app/data/bot.sqlite3
+    volumes:
+      - ${PWD}/data/dst-bot:/app/data
     ports:
       - "8001:8000"
   napcat:

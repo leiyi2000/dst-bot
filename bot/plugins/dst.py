@@ -7,9 +7,9 @@ from bot.command import CommandRouter
 router = CommandRouter()
 
 
-@router.command("ls", inject_event=False)
+@router.command("服务器列表", inject_event=False)
 async def ls():
-    reply_message = ""
+    reply_message = "群服务器如下: \n"
     async with httpx.AsyncClient() as client:
         async for dst_server in models.DSTServer.all():
             url = f"{dst_server.endpoint}/deploy/{dst_server.cluster_id}"
@@ -18,5 +18,7 @@ async def ls():
             cluster = response.json()
             if cluster["status"] != "running":
                 continue
-            reply_message += cluster["content"]["ini"]["cluster_name"] + ","
+            status = "运行" if cluster["status"] != "running" else "停止"
+            line = f"{cluster["content"]["ini"]["cluster_name"]} {status}\n"
+            reply_message += line
     return reply_message

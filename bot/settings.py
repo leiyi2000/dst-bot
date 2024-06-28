@@ -4,8 +4,11 @@ from datetime import tzinfo, timedelta
 
 
 APP_NAME = "bot"
-DATABASE_URL = os.environ.get("DATABASE_URL", default="sqlite://bot.sqlite3")
+# 科雷令牌
+KELEI_TOKEN = os.environ.get("KELEI_TOKEN")
 NAPCAT_API = os.environ.get("NAPCAT_API", default="http://127.0.0.1:3000")
+DATABASE_URL = os.environ.get("DATABASE_URL", default="sqlite://bot.sqlite3")
+
 
 # 数据量配置
 TORTOISE_ORM = {
