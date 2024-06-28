@@ -15,7 +15,7 @@ async def ls():
             url = f"{dst_server.endpoint}/deploy/{dst_server.cluster_id}"
             response = await client.get(url)
             cluster = response.json()
-            status = "运行" if cluster["status"] != "running" else "停止"
+            status = "运行" if cluster["status"] == "running" else "停止"
             line = f'{cluster["content"]["ini"]["cluster_name"]} {status}\n'
             reply_message += line
     return reply_message
