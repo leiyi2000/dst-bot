@@ -16,6 +16,6 @@ async def ls():
             response = await client.get(url)
             cluster = response.json()
             status = "运行" if cluster["status"] == "running" else "停止"
-            line = f'{cluster["content"]["ini"]["cluster_name"]} {status}\n'
+            line = f'简称:  {dst_server.name} 存档名: {cluster["content"]["ini"]["cluster_name"]} 状态: {status}\n'
             reply_message += line
     return reply_message
