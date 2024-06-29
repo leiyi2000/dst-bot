@@ -29,7 +29,7 @@ async def download_file(url: str):
 
 
 async def send_message(
-    message: str | dict | Message,
+    message: str | dict | Message | None,
     user_id: int | None = None,
     group_id: int | None = None,
     message_type: Literal["private", "group"] = "group",
@@ -37,11 +37,13 @@ async def send_message(
     """发送消息.
 
     Args:
-        message (str | dict | Message): 消息.
+        message (str | dict | Message | None): 消息.
         user_id (int | None): QQ.
         group_id (int | None): 群号.
         message_type (Literal["private", "group"]): 消息类型.
     """
+    if message is None:
+        return
     if isinstance(message, str):
         message = {
             "type": "text",
