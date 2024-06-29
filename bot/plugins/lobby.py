@@ -94,7 +94,7 @@ async def update_lobby_room():
     cache.set("lobby_room", rooms)
 
 
-@schedule.job(hours=1)
+# @schedule.job(hours=1)
 async def update_room_details():
     log.info("[update_room_details]")
     rooms = []
