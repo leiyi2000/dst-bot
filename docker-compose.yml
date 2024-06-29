@@ -9,6 +9,7 @@ services:
     environment:
       - NAPCAT_API=http://napcat:3000
       - DATABASE_URL=sqlite:/app/data/bot.sqlite3
+      - KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU=
     volumes:
       - ${PWD}/data/dst-bot:/app/data
     ports:

@@ -5,7 +5,7 @@ from datetime import tzinfo, timedelta
 
 APP_NAME = "bot"
 # 科雷令牌
-KELEI_TOKEN = os.environ.get("KELEI_TOKEN")
+KLEI_TOKEN = os.environ.get("KLEI_TOKEN")
 NAPCAT_API = os.environ.get("NAPCAT_API", default="http://127.0.0.1:3000")
 DATABASE_URL = os.environ.get("DATABASE_URL", default="sqlite://bot.sqlite3")
 

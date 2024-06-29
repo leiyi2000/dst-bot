@@ -22,5 +22,7 @@ async def ls():
             reply_message += f"简称: {room}\n"
             reply_message += f"状态: {status}\n\n"
     if room:
-        reply_message += f"PS: 发送备份指令即可备份存到群文件如: 备份{room}"
+        reply_message += (
+            f"发送备份指令即可备份存到群文件如(备份存档会引起游戏卡顿): 备份{room}"
+        )
         return reply_message
