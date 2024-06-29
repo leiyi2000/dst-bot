@@ -187,9 +187,9 @@ async def find_room_details(event: Event):
     try:
         room = cache.get("history_room")["data"][int(key)]
         room_details = await read_room_details(room["row_id"], room["region"])
-        name = room["name"]
-        desc = room["desc"]
-        season = room["season"]
+        name = room_details["name"]
+        desc = room_details["desc"]
+        season = room_details["season"]
         players = re.findall(r'name="(.*?)"', room_details["players"])[:9]
         if len(players) > 8:
             players[-1] = "...."

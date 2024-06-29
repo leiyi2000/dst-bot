@@ -36,7 +36,7 @@ async def reads():
     description="删除一个DST服",
 )
 async def delete(id: int):
-    await models.DSTServer.delete(id)
+    return await models.DSTServer.delete(id)
 
 
 @router.put(
@@ -49,7 +49,7 @@ async def update(
     endpoint: str = Body(),
     cluster_id: int = Body(),
 ):
-    await models.DSTServer.filter(id=id).update(
+    return await models.DSTServer.filter(id=id).update(
         name=name,
         endpoint=endpoint,
         cluster_id=cluster_id,
