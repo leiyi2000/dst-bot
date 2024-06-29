@@ -139,8 +139,8 @@ async def find_lobby_room(event: Event):
         if count >= 10:
             break
     if count > 0:
-        reply_message += f'数据更新时间: {lobby_room["update_at"]}\n'
-        reply_message += "使用查房间指令可以获取更多信息如: 查房间1"
+        reply_message += "使用查房间指令可以获取更多信息如: 查房间1\n"
+        reply_message += f'数据更新时间: {lobby_room["update_at"]}'
         cache.set("history_room", history_room)
         return reply_message
 
@@ -175,8 +175,8 @@ async def find_player_in_room(event: Event):
         if count >= 10:
             break
     if count > 0:
-        reply_message += f'数据更新时间: {room_details["update_at"]}\n'
-        reply_message += "使用查房间指令可以获取更多信息如: 查房间1"
+        reply_message += "使用查房间指令可以获取更多信息如: 查房间1\n"
+        reply_message += f'数据更新时间: {room_details["update_at"]}'
         cache.set("history_room", history_room)
         return reply_message
 
@@ -205,5 +205,6 @@ async def find_room_details(event: Event):
         reply_message += f"介绍: {desc}\n\n"
         reply_message += "使用查玩家指令可以知道该玩家在何处流浪如: 查玩家 大明"
         return reply_message
-    except Exception:
+    except Exception as e:
+        log.exception(f"[find_room_details] error: {e}")
         return None
