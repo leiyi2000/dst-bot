@@ -156,7 +156,8 @@ async def find_player_in_room(event: Event):
     for room in room_details["data"]:
         name = room["name"]
         players = re.findall(r'name="(.*?)"', room["players"])
-        day = re.findall(r"day=([0-9]+)", room.get("data", ""))[0]
+        day = re.findall(r"day=([0-9]+)", room.get("data", ""))
+        day = day[0] if day else ""
         connected = room.get("connected", "")
         season = room.get("season", "")
         c_connect = (
@@ -189,7 +190,15 @@ async def find_player_in_room(event: Event):
 async def find_room_details(event: Event):
     key = event.match_text.removeprefix("查房间").strip()
     room = cache.get("history_room")["data"][int(key)]
-    room = await read_room_details(room["row_id"], room["region"])
+    async with httpx.AsyncClient() as client:
+        url = f"https://lobby-v2-{room["region"]}.klei.com/lobby/read"
+        payload = {
+            "__token": KLEI_TOKEN,
+            "__gameId": "DST",
+            "query": {"__rowId": room["row_id"]},
+        }
+        response = await client.post(url, json=payload)
+        room = response.json()["GET"][0]
     name = room["name"]
     desc = room.get("desc", "")
     season = room.get("season", "")
@@ -197,7 +206,8 @@ async def find_room_details(event: Event):
     players = re.findall(r'name="(.*?)"', room["players"])[:9]
     if len(players) > 8:
         players[-1] = "...."
-    day = re.findall(r"day=([0-9]+)", room.get("data", ""))[0]
+    day = re.findall(r"day=([0-9]+)", room.get("data", ""))
+    day = day[0] if day else ""
     c_connect = f"""c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
     # 拼接消息
     reply_message = f"存档: {name}\n"
