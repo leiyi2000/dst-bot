@@ -191,7 +191,7 @@ async def find_room_details(event: Event):
     key = event.match_text.removeprefix("查房间").strip()
     room = cache.get("history_room")["data"][int(key)]
     async with httpx.AsyncClient() as client:
-        url = f"https://lobby-v2-{room["region"]}.klei.com/lobby/read"
+        url = f'https://lobby-v2-{room["region"]}.klei.com/lobby/read'
         payload = {
             "__token": KLEI_TOKEN,
             "__gameId": "DST",
