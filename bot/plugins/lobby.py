@@ -14,6 +14,8 @@ from bot.command import CommandRouter
 
 
 log = structlog.get_logger()
+# 限制读取房间详情的并发
+semaphore = asyncio.Semaphore(6)
 
 
 class LobbyRoomCache:
@@ -47,19 +49,20 @@ async def read_room_details(
     region: str,
 ) -> dict:
     room_details = {}
-    try:
-        async with httpx.AsyncClient() as client:
-            url = f"https://lobby-v2-{region}.klei.com/lobby/read"
-            payload = {
-                "__token": KLEI_TOKEN,
-                "__gameId": "DST",
-                "query": {"__rowId": row_id},
-            }
-            response = await client.post(url, json=payload)
-            room_details = response.json()["GET"][0]
-            room_details["region"] = region
-    except Exception as e:
-        log.exception(f"[read_room_details] error: {e}")
+    async with semaphore:
+        try:
+            async with httpx.AsyncClient() as client:
+                url = f"https://lobby-v2-{region}.klei.com/lobby/read"
+                payload = {
+                    "__token": KLEI_TOKEN,
+                    "__gameId": "DST",
+                    "query": {"__rowId": row_id},
+                }
+                response = await client.post(url, json=payload)
+                room_details = response.json()["GET"][0]
+                room_details["region"] = region
+        except Exception as e:
+            log.exception(f"[read_room_details] error: {e}")
     return room_details
 
 
@@ -94,21 +97,17 @@ async def update_lobby_room():
     cache.set("lobby_room", rooms)
 
 
-# @schedule.job(hours=1)
+@schedule.job(hours=1)
 async def update_room_details():
     log.info("[update_room_details]")
     rooms = []
-    tasks = []
     for region in await read_regions():
+        row_ids = set()
         for room in await read_lobby_room(region):
-            tasks.append(read_room_details(room["__rowId"], region))
-    split_tasks = [[]]
-    while tasks:
-        if len(split_tasks[-1]) < 12:
-            split_tasks[-1].append(tasks.pop())
-        else:
-            split_tasks.append([tasks.pop()])
-    for tasks in split_tasks:
+            row_ids.add(room["__rowId"])
+        tasks = []
+        for row_id in row_ids:
+            tasks.append(read_room_details(row_id, region))
         result = await asyncio.gather(*tasks)
         for room_details in result:
             if "__rowId" in room_details:
