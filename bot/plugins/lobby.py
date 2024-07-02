@@ -156,8 +156,12 @@ async def find_player_in_room(event: Event):
     for room in room_details["data"]:
         name = room["name"]
         players = re.findall(r'name="(.*?)"', room["players"])
-        day = re.findall(r"day=([0-9]+)", room["data"])[0]
-        season = room["season"]
+        day = re.findall(r"day=([0-9]+)", room.get("data", ""))[0]
+        connected = room.get("connected", "")
+        season = room.get("season", "")
+        c_connect = (
+            f"""c_connect("{room_details.get('__addr', '')}", {room.get('port', '')})"""
+        )
         for player in players:
             if key in player:
                 count += 1
@@ -168,9 +172,10 @@ async def find_player_in_room(event: Event):
                 reply_message += f"编号: {count}\n"
                 reply_message += f"存档: {name}\n"
                 reply_message += f"玩家: {player}\n"
-                reply_message += f'在线人数: {room["connected"]}\n'
+                reply_message += f"在线人数: {connected}\n"
                 reply_message += f"天数: {day}\n"
                 reply_message += f"季节: {season}\n\n"
+                reply_message += f"直连: {c_connect}\n"
         if count >= 10:
             break
     if count > 0:
@@ -183,27 +188,24 @@ async def find_player_in_room(event: Event):
 @router.command("查房间.*+")
 async def find_room_details(event: Event):
     key = event.match_text.removeprefix("查房间").strip()
-    try:
-        room = cache.get("history_room")["data"][int(key)]
-        room_details = await read_room_details(room["row_id"], room["region"])
-        name = room_details["name"]
-        desc = room_details["desc"]
-        season = room_details["season"]
-        players = re.findall(r'name="(.*?)"', room_details["players"])[:9]
-        if len(players) > 8:
-            players[-1] = "...."
-        day = re.findall(r"day=([0-9]+)", room_details["data"])[0]
-        c_connect = f"""c_connect("{room_details['__addr']}", {room_details['port']})"""
-        # 拼接消息
-        reply_message = f"存档: {name}\n"
-        reply_message += f"玩家: {players}\n"
-        reply_message += f"天数: {day}\n"
-        reply_message += f"季节: {season}\n"
-        reply_message += f"直连: {c_connect}\n"
-        reply_message += f'在线人数: {room_details["connected"]}\n'
-        reply_message += f"介绍: {desc}\n\n"
-        reply_message += "使用查玩家指令可以知道该玩家在何处流浪如: 查玩家 大明"
-        return reply_message
-    except Exception as e:
-        log.exception(f"[find_room_details] error: {e}")
-        return None
+    room = cache.get("history_room")["data"][int(key)]
+    room = await read_room_details(room["row_id"], room["region"])
+    name = room["name"]
+    desc = room.get("desc", "")
+    season = room.get("season", "")
+    connected = room.get("connected", "")
+    players = re.findall(r'name="(.*?)"', room["players"])[:9]
+    if len(players) > 8:
+        players[-1] = "...."
+    day = re.findall(r"day=([0-9]+)", room.get("data", ""))[0]
+    c_connect = f"""c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
+    # 拼接消息
+    reply_message = f"存档: {name}\n"
+    reply_message += f"玩家: {players}\n"
+    reply_message += f"天数: {day}\n"
+    reply_message += f"季节: {season}\n"
+    reply_message += f"直连: {c_connect}\n"
+    reply_message += f"在线人数: {connected}\n"
+    reply_message += f"介绍: {desc}\n\n"
+    reply_message += "使用查玩家指令可以知道该玩家在何处流浪如: 查玩家 大明"
+    return reply_message
