@@ -160,9 +160,7 @@ async def find_player_in_room(event: Event):
         day = day[0] if day else ""
         connected = room.get("connected", "")
         season = room.get("season", "")
-        c_connect = (
-            f"""c_connect("{room_details.get('__addr', '')}", {room.get('port', '')})"""
-        )
+        c_connect = """c_connect("{room.get('__addr', '')}", {room.get('port', '')})"""
         for player in players:
             if key in player:
                 count += 1
