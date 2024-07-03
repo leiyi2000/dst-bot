@@ -173,8 +173,8 @@ async def find_player_in_room(event: Event):
                 reply_message += f"玩家: {player}\n"
                 reply_message += f"在线人数: {connected}\n"
                 reply_message += f"天数: {day}\n"
-                reply_message += f"季节: {season}\n\n"
-                reply_message += f"直连: {c_connect}\n"
+                reply_message += f"季节: {season}\n"
+                reply_message += f"直连: {c_connect}\n\n"
         if count >= 10:
             break
     if count > 0:
