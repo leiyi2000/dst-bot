@@ -36,7 +36,7 @@ async def reads():
     description="删除一个DST服",
 )
 async def delete(id: int):
-    return await models.DSTServer.delete(id)
+    return await models.DSTServer.delete(id=id)
 
 
 @router.put(
