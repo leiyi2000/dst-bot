@@ -48,21 +48,19 @@ async def read_room_details(
     row_id: str,
     region: str,
 ) -> dict:
-    room_details = {}
     async with semaphore:
-        try:
-            async with httpx.AsyncClient() as client:
-                url = f"https://lobby-v2-{region}.klei.com/lobby/read"
-                payload = {
-                    "__token": KLEI_TOKEN,
-                    "__gameId": "DST",
-                    "query": {"__rowId": row_id},
-                }
-                response = await client.post(url, json=payload)
-                room_details = response.json()["GET"][0]
+        room_details = {}
+        async with httpx.AsyncClient() as client:
+            url = f"https://lobby-v2-{region}.klei.com/lobby/read"
+            payload = {
+                "__token": KLEI_TOKEN,
+                "__gameId": "DST",
+                "query": {"__rowId": row_id},
+            }
+            response = await client.post(url, json=payload)
+            if lobby_room := response.json().get("GET", []):
+                room_details = lobby_room[0]
                 room_details["region"] = region
-        except Exception as e:
-            log.exception(f"[read_room_details] error: {e}")
     return room_details
 
 
@@ -73,9 +71,10 @@ async def read_lobby_room(
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
     rooms = []
-    for item in response.json()["GET"]:
-        item["region"] = region
-        rooms.append(item)
+    if lobby_room := response.json().get("GET", []):
+        for item in lobby_room:
+            item["region"] = region
+            rooms.append(item)
     return rooms
 
 
