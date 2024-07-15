@@ -44,7 +44,7 @@ async def reply(
         group_id (int | None): 群号.
         message_type (Literal["private", "group"]): 消息类型.
     """
-    if message is None:
+    if not message:
         return
     if isinstance(message, (str, Message)):
         return await send_message(
@@ -53,7 +53,7 @@ async def reply(
             group_id=group_id,
             message_type=message_type,
         )
-    if isinstance(message, NodeMessage):
+    if isinstance(message, list):
         return await forward_messages(
             message,
             user_id=user_id,
@@ -110,11 +110,12 @@ async def forward_messages(
     """发送合并转发消息.
 
     Args:
-        messages (list[dict]): 消息列表.
+        messages (List[NodeMessage]): 消息列表.
         user_id (int | None): QQ.
         group_id (int | None): 群号.
         message_type (Literal["private", "group"]): 消息类型.
     """
+
     action = f"{NAPCAT_API}/send_{message_type}_forward_msg"
     forward = []
     for message in messages:
