@@ -2,6 +2,8 @@ from typing import Literal, List
 
 from pydantic import BaseModel
 
+from bot.settings import BOT_ACCOUNT
+
 
 class FileMessage(BaseModel):
     file: str
@@ -24,8 +26,8 @@ class Message(BaseModel):
 
 
 class NodeMessage(BaseModel):
-    name: str
-    uin: str
+    name: str = "wendy"
+    uin: str = BOT_ACCOUNT
     content: str
 
 

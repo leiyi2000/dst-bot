@@ -7,10 +7,10 @@ from datetime import datetime
 import httpx
 import structlog
 
-from bot.schemas import Event
 from bot.schedule import schedule
 from bot.settings import KLEI_TOKEN
 from bot.command import CommandRouter
+from bot.schemas import Event, NodeMessage
 
 
 log = structlog.get_logger()
@@ -140,7 +140,7 @@ async def find_lobby_room(event: Event):
         reply_message += "使用查房间指令可以获取更多信息如: 查房间1\n"
         reply_message += f'数据更新时间: {lobby_room["update_at"]}'
         cache.set("history_room", history_room)
-        return reply_message
+        return [NodeMessage(content=reply_message)]
 
 
 @router.command("查玩家.*+")
@@ -177,17 +177,17 @@ async def find_player_in_room(event: Event):
         if count >= 10:
             break
     if count > 0:
-        reply_message += "使用查房间指令可以获取更多信息如: 查房间1\n"
+        reply_message += "使用查房指令可以获取更多信息如: 查房1\n"
         reply_message += f'数据更新时间: {room_details["update_at"]}'
         cache.set("history_room", history_room)
-        return reply_message
+        return [NodeMessage(content=reply_message)]
     else:
         return f"{key} 404~~"
 
 
-@router.command("查房间.*+")
+@router.command("查房.*+")
 async def find_room_details(event: Event):
-    key = event.match_text.removeprefix("查房间").strip()
+    key = event.match_text.removeprefix("查房").strip()
     room = cache.get("history_room")["data"][int(key)]
     async with httpx.AsyncClient() as client:
         url = f'https://lobby-v2-{room["region"]}.klei.com/lobby/read'
