@@ -181,6 +181,8 @@ async def find_player_in_room(event: Event):
         reply_message += f'数据更新时间: {room_details["update_at"]}'
         cache.set("history_room", history_room)
         return reply_message
+    else:
+        return f"{key} 404~~"
 
 
 @router.command("查房间.*+")

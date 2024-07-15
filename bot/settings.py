@@ -4,6 +4,8 @@ from datetime import tzinfo, timedelta
 
 
 APP_NAME = "bot"
+# 机器人QQ号
+BOT_ACCOUNT = os.environ.get("ACCOUNT")
 # 科雷令牌
 KLEI_TOKEN = os.environ.get("KLEI_TOKEN")
 NAPCAT_API = os.environ.get("NAPCAT_API", default="http://127.0.0.1:3000")

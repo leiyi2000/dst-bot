@@ -20,7 +20,13 @@ class ImageMessage(BaseModel):
 
 class Message(BaseModel):
     type: Literal["file", "text", "image"]
-    data: FileMessage | TextMessage
+    data: FileMessage | TextMessage | ImageMessage
+
+
+class NodeMessage(BaseModel):
+    name: str
+    uin: str
+    content: str
 
 
 class Event(BaseModel):

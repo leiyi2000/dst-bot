@@ -120,7 +120,7 @@ async def run_command(router: CommandRouter, event: Event):
                 reply_message = await func(**route.func_kwargs)
             else:
                 reply_message = func(**route.func_kwargs)
-            await napcat.send_message(
+            await napcat.reply(
                 reply_message,
                 event.user_id,
                 event.group_id,
@@ -131,7 +131,7 @@ async def run_command(router: CommandRouter, event: Event):
 
             log.error(traceback.format_exc())
             reply_message = "哼哼~~~出错了"
-            await napcat.send_message(
+            await napcat.reply(
                 reply_message,
                 event.user_id,
                 event.group_id,
