@@ -27,4 +27,4 @@ async def ls():
         reply_message += "注意: 备份存档会引起游戏卡顿"
         return [NodeMessage(content=reply_message)]
     else:
-        "什么也没有"
+        "404~~"
