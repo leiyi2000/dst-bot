@@ -10,7 +10,7 @@ services:
       - ACCOUNT=${ACCOUNT:-机器人QQ号}
       - NAPCAT_API=http://napcat:3000
       - DATABASE_URL=sqlite:/app/data/bot.sqlite3
-      - KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU=
+      - KLEI_TOKEN=${KLEI_TOKEN:-科雷令牌}
     volumes:
       - ${PWD}/data/dst-bot:/app/data
     ports:

@@ -54,7 +54,7 @@ async def reply(
             message_type=message_type,
         )
     if isinstance(message, NodeMessage):
-        return forward_messages(
+        return await forward_messages(
             message,
             user_id=user_id,
             group_id=group_id,
