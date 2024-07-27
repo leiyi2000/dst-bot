@@ -8,9 +8,10 @@ services:
     restart: always
     environment:
       - ACCOUNT=${ACCOUNT:-机器人QQ号}
+      - KLEI_TOKEN=${KLEI_TOKEN:-科雷令牌}
+      - WENDY_API=${WENDY_API:-科雷令牌}
       - NAPCAT_API=http://napcat:3000
       - DATABASE_URL=sqlite:/app/data/bot.sqlite3
-      - KLEI_TOKEN=${KLEI_TOKEN:-科雷令牌}
     volumes:
       - ${PWD}/data/dst-bot:/app/data
     ports:
