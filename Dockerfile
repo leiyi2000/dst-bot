@@ -7,7 +7,7 @@ RUN pip install pdm
 RUN pdm config pypi.url https://pypi.tuna.tsinghua.edu.cn/simple
 
 COPY ./pyproject.toml ./pdm.lock* /tmp/
-RUN pdm export -f requirements --output requirements.txt --without-hashes
+RUN pdm export -f requirements --output requirements.txt --without-hashes --prod
 
 
 FROM python:3.11-slim-bullseye

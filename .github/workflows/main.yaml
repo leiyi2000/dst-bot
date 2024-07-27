@@ -38,6 +38,7 @@ jobs:
     
     - name: Setup Environment Variables
       run: |
+        cd code/
         echo "IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d')" >> .env
         echo "ACCOUNT=1811992125" >> .env
         echo "WENDY_API=http://36.134.35.245:8000" >> .env
