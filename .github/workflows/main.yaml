@@ -35,10 +35,17 @@ jobs:
     
     - name: Create Dir
       run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "mkdir -p /home/ylei01/apps/dst-bot"
+    
+    - name: Setup Environment Variables
+      run: |
+        echo "IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d')" >> .env
+        echo "ACCOUNT=1811992125" >> .env
+        echo "WENDY_API=http://36.134.35.245:8000" >> .env
+        echo "KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU=" >> .env
 
     - name: Sync files
       run: |
-        rsync -av --delete --exclude='.*' --exclude='data' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
+        rsync -av --delete --exclude='.*' --exclude='data' --include='.env' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
 
     - name: Run
-      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "export IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d') ACCOUNT=1811992125 WENDY_API='http://36.134.35.245:8000' KLEI_TOKEN='pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU=' && cd /home/ylei01/apps/dst-bot && docker compose up -d"
+      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "cd /home/ylei01/apps/dst-bot && source .env && docker compose up -d"
