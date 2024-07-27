@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from bot.api import event, dst
+from bot.api import event, admin
 
 
 router = APIRouter()
@@ -19,8 +19,9 @@ router.include_router(
     tags=["事件上报"],
 )
 
+
 router.include_router(
-    dst.router,
-    prefix="/dst",
-    tags=["DST"],
+    admin.router,
+    prefix="/admin",
+    tags=["管理"],
 )

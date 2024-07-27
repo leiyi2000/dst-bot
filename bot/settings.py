@@ -6,6 +6,8 @@ from datetime import tzinfo, timedelta
 APP_NAME = "bot"
 # 机器人QQ号
 BOT_ACCOUNT = os.environ.get("ACCOUNT")
+# wendy开服面板工具API  https://github.com/leiyi2000/wendy
+WENDY_API = os.environ.get("WENDY_API")
 # 科雷令牌
 KLEI_TOKEN = os.environ.get("KLEI_TOKEN")
 NAPCAT_API = os.environ.get("NAPCAT_API", default="http://127.0.0.1:3000")

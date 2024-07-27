@@ -41,4 +41,4 @@ jobs:
         rsync -av --delete --exclude='.*' --exclude='data' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
 
     - name: Run
-      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "export IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d') && export ACCOUNT=1811992125 && export KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU= && cd /home/ylei01/apps/dst-bot && docker compose up -d"
+      run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "export IMAGE_TAG=${GITHUB_SHA::4}$(date +'%Y%m%d') && export ACCOUNT=1811992125 && export WENDY_API=http://36.134.35.245:8000 && export KLEI_TOKEN=pds-g^KU_QSHhEciD^XZusQbOd+Sh0wX0oMQ/n8uSXQkfN8/QLMBJrdNx5nIU= && cd /home/ylei01/apps/dst-bot && docker compose up -d"
