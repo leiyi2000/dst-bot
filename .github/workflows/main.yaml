@@ -46,7 +46,7 @@ jobs:
 
     - name: Sync files
       run: |
-        rsync -av --delete --exclude='.*' --exclude='data' --include='.env' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
+        rsync -av --delete --exclude='data' -e "ssh -p 6000" code/ ylei01@${{ secrets.SERVER_HOST }}:/home/ylei01/apps/dst-bot
 
     - name: Run
       run: ssh -p 6000 ylei01@${{ secrets.SERVER_HOST }} "cd /home/ylei01/apps/dst-bot && source .env && docker compose up -d"
