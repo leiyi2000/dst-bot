@@ -164,3 +164,4 @@ cython_debug/
 *sqlite3*
 .vscode/
 data/
+include .env.example
