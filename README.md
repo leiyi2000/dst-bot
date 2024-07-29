@@ -1,6 +1,7 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/leiyi2000/dst-bot/main/docs/logo.png" style="width:200px; height:200px; border-radius:50%;"/>
+    <img src="https://raw.githubusercontent.com/leiyi2000/dst-bot/main/docs/logo.png" style="width:200px; height:200px; border-radius:50%; display:block; margin:auto;" />
 </div>
+
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/leiyi2000/dst-bot/main.yml)
 
