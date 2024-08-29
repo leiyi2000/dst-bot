@@ -17,7 +17,7 @@ async def ls():
         response = await client.get(url)
         for cluster in response.json():
             cluster_id = cluster["id"]
-            cluster_name = cluster["content"]["ini"]["cluster_name"]
+            cluster_name = cluster["cluster"]["ini"]["cluster_name"]
             reply_message += f"{cluster_id}. {cluster_name}\n"
     if cluster_id:
         reply_message += f"\n发送备份指令即可备份存至群文件如: 备份{cluster_id}\n"
