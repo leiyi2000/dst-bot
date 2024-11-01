@@ -37,13 +37,13 @@ class CommandRoute:
     async def match(self, event: Event) -> bool:
         if self.limit_group and event.message_type == "private":
             return False
+        if self.limit_admin:
+            user = await models.Admin.get_or_none(uid=event.user_id)
+            return user is not None
         for message in event.message:
             if message.type == "text":
                 event.match_text = message.data.text
                 return self.pattern.fullmatch(message.data.text) is not None
-        if self.limit_admin:
-            user = await models.Admin.get_or_none(uid=event.user_id)
-            return user is not None
         return False
 
 

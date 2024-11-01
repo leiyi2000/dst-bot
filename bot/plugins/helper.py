@@ -1,8 +1,8 @@
 import httpx
 
 from bot.settings import WENDY_API
-from bot.schemas import NodeMessage
 from bot.command import CommandRouter
+from bot.schemas import Event, NodeMessage
 
 
 router = CommandRouter()
@@ -25,3 +25,12 @@ async def ls():
         return [NodeMessage(content=reply_message)]
     else:
         "404~~"
+
+
+@router.command("重启.*+", limit_admin=True)
+async def restart(event: Event):
+    id = event.match_text.removeprefix("重启").strip()
+    async with httpx.AsyncClient(timeout=300) as client:
+        url = f"{WENDY_API}/deploy/restart/{id}"
+        await client.get(url)
+    return "重启中"

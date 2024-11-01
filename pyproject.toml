@@ -110,7 +110,7 @@ docstring-code-line-length = "dynamic"
 [tool.pdm.scripts]
 # 开发环境
 dev.env_file.override = ".env"
-dev.cmd = "uvicorn bot.main:app --host 0.0.0.0 --port 8000 --reload"
+dev.cmd = "uvicorn bot.main:app --host 0.0.0.0 --port 8090 --reload"
 # 安装后运行
 post_install = "pre-commit install"
 
