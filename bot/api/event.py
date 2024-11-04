@@ -21,6 +21,7 @@ async def receive(
 ):
     try:
         event = Event.model_validate(message)
+        log.info(f"event: {event}")
         background_tasks.add_task(run_command, plugin_router, event)
     except Exception:
         # log.exception(f"new type message: {message} error: {e}")

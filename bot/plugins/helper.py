@@ -34,3 +34,12 @@ async def restart(event: Event):
         url = f"{WENDY_API}/deploy/restart/{id}"
         await client.get(url)
     return "重启中"
+
+
+@router.command("关服.*+", limit_admin=True)
+async def stop(event: Event):
+    id = event.match_text.removeprefix("关服").strip()
+    async with httpx.AsyncClient(timeout=300) as client:
+        url = f"{WENDY_API}/deploy/stop/{id}"
+        await client.get(url)
+    return "关闭中"
