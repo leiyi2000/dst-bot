@@ -10,7 +10,7 @@ from bot.schemas import Message, NodeMessage
 log = structlog.get_logger()
 
 
-async def download_file(url: str):
+async def download_file(url: str) -> str:
     """下载文件.
 
     Args:
@@ -19,6 +19,9 @@ async def download_file(url: str):
         user_id (int | None): QQ.
         group_id (int | None): 群号.
         message_type (Literal["private", "group"]): 消息类型.
+
+    Returns:
+        str: 下载后保存的文件路径.
     """
     async with httpx.AsyncClient() as client:
         payload = {"url": url}
@@ -67,7 +70,7 @@ async def send_message(
     user_id: int | None = None,
     group_id: int | None = None,
     message_type: Literal["private", "group"] = "group",
-) -> dict:
+):
     """发送消息.
 
     Args:

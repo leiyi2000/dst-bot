@@ -46,7 +46,7 @@ class CommandRoute:
             return False
         for message in event.message:
             if message.type == "text":
-                event.match_text = message.data.text
+                event.match_message = message.data.text
                 if self.pattern.fullmatch(message.data.text) is not None:
                     return await self.validate_admin(event.user_id)
         return False

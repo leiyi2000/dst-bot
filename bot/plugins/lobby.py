@@ -119,7 +119,7 @@ async def update_room_details():
 
 @router.command("查服.*+")
 async def find_lobby_room(event: Event):
-    key = event.match_text.removeprefix("查服").strip()
+    key = event.match_message.removeprefix("查服").strip()
     reply_message = "查服结果如下(最多显示10条): \n\n"
     if cache.get("lobby_room") is None:
         await update_lobby_room()
@@ -150,7 +150,7 @@ async def find_lobby_room(event: Event):
 
 @router.command("查玩家.*+")
 async def find_player_in_room(event: Event):
-    key = event.match_text.removeprefix("查玩家").strip()
+    key = event.match_message.removeprefix("查玩家").strip()
     count = 0
     history_room = {}
     reply_message = "查玩家结果如下(最多显示10条): \n\n"
@@ -192,7 +192,7 @@ async def find_player_in_room(event: Event):
 
 @router.command("查房.*+")
 async def find_room_details(event: Event):
-    key = event.match_text.removeprefix("查房").strip()
+    key = event.match_message.removeprefix("查房").strip()
     room = cache.get("history_room")["data"][int(key)]
     async with httpx.AsyncClient() as client:
         url = f'https://lobby-v2-{room["region"]}.klei.com/lobby/read'

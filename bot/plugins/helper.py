@@ -1,8 +1,16 @@
+import base64
+import datetime
+
 import httpx
 
-from bot.settings import WENDY_API
+from bot import models
 from bot.command import CommandRouter
 from bot.schemas import Event, NodeMessage
+from bot.settings import (
+    WENDY_API,
+    KLEI_TOKEN,
+    NAPCAT_API,
+)
 
 
 router = CommandRouter()
@@ -27,19 +35,85 @@ async def ls():
         "404~~"
 
 
-@router.command("重启.*+", limit_admin=True)
+@router.command("开服.*+", limit_admin=True)
+async def create(event: Event):
+    cluster_name = event.match_message.removeprefix("开服").strip()
+    async with httpx.AsyncClient(timeout=300) as client:
+        url = f"{WENDY_API}/deploy"
+        post_data = {
+            "cluster_token": KLEI_TOKEN,
+            "ini": {
+                "cluster_name": cluster_name,
+            },
+        }
+        response = await client.post(url, json=post_data)
+        response.raise_for_status()
+    return "OK"
+
+
+@router.command("重启[0-9]+", limit_admin=True)
 async def restart(event: Event):
-    id = event.match_text.removeprefix("重启").strip()
+    id = event.match_message.removeprefix("重启").strip()
     async with httpx.AsyncClient(timeout=300) as client:
         url = f"{WENDY_API}/deploy/restart/{id}"
         await client.get(url)
-    return "重启中"
+    return "OK"
 
 
-@router.command("关服.*+", limit_admin=True)
+@router.command("关服[0-9]+", limit_admin=True)
 async def stop(event: Event):
-    id = event.match_text.removeprefix("关服").strip()
+    id = event.match_message.removeprefix("关服").strip()
     async with httpx.AsyncClient(timeout=300) as client:
         url = f"{WENDY_API}/deploy/stop/{id}"
         await client.get(url)
-    return "关闭中"
+    return "OK"
+
+
+@router.command("文件开服.*+", limit_admin=True)
+async def create_by_file(event: Event):
+    file = event.match_message.removeprefix("文件开服").strip()
+    # 最近半小时内范围搜索
+    now = datetime.datetime.now()
+    constraints = {
+        "file": file,
+        "created_at__gte": now - datetime.timedelta(minutes=30),
+    }
+    file_event = (
+        await models.FileEvent.filter(**constraints).order_by("-created_at").first()
+    )
+    if file_event is None:
+        return "404~~"
+    # 下载文件并上传开服
+    async with httpx.AsyncClient(timeout=600) as client:
+        post_data = {"file_id": file_event.file_id}
+        response = await client.post(f"{NAPCAT_API}/get_file", json=post_data)
+        response = response.json()
+        file_content = response["data"]["base64"]
+        # 获取文件base64内容转为二进制并上传
+        files = {"file": (file_event.file, base64.b64decode(file_content))}
+        response = await client.post(f"{WENDY_API}/deploy/upload", files=files)
+        response.raise_for_status()
+    return "OK"
+
+
+@router.command("回档[0-9]+-[0-9]+", limit_admin=True)
+async def rollback(event: Event):
+    args = event.match_message.removeprefix("回档").strip()
+    id, days = args.split("-")
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{WENDY_API}/deploy/{id}")
+        response = response.json()
+        world_name = "Master"
+        for world in response["cluster"]["world"]:
+            if world["type"] == "Master":
+                world_name = world["name"]
+        # 执行回滚
+        post_data = {
+            "command": f"c_rollback({days})",
+            "world_name": world_name,
+        }
+        response = await client.post(
+            f"{WENDY_API}/console/command/{id}", json=post_data
+        )
+        response.raise_for_status()
+    return "OK"

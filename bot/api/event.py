@@ -1,11 +1,15 @@
 """消息事件"""
 
+import json
+
 import structlog
 from fastapi import APIRouter, Body, BackgroundTasks
 
+from bot import models
 from bot.schemas import Event
 from bot.command import run_command
 from bot.plugins import router as plugin_router
+
 
 router = APIRouter()
 log = structlog.get_logger()
@@ -20,8 +24,16 @@ async def receive(
     message: dict = Body(),
 ):
     try:
+        log.info(json.dumps(message, indent=4, ensure_ascii=False))
         event = Event.model_validate(message)
-        log.info(f"event: {event}")
+        # 对于文件类型的event入库
+        for item in event.message:
+            if item.type == "file":
+                # 文件类型数据准备入库
+                await models.FileEvent.create(
+                    file=item.data.file,
+                    file_id=item.data.file_id,
+                )
         background_tasks.add_task(run_command, plugin_router, event)
     except Exception:
         # log.exception(f"new type message: {message} error: {e}")

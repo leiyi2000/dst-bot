@@ -7,22 +7,21 @@ from bot.settings import BOT_ACCOUNT
 
 class FileMessage(BaseModel):
     file: str
-    name: str
+    name: str = ""
+    path: str = ""
+    url: str = ""
+    file_id: str = ""
+    file_size: str = ""
+    file_unique: str = ""
 
 
 class TextMessage(BaseModel):
     text: str
 
 
-class ImageMessage(BaseModel):
-    file: str
-    url: str
-    file_size: str
-
-
 class Message(BaseModel):
-    type: Literal["file", "text", "image"]
-    data: FileMessage | TextMessage | ImageMessage
+    type: Literal["file", "text"]
+    data: FileMessage | TextMessage
 
 
 class NodeMessage(BaseModel):
@@ -37,5 +36,5 @@ class Event(BaseModel):
     message_type: Literal["private", "group"]
     message: List[Message]
     time: int
-    # 匹配上的指令消息
-    match_text: str | None = None
+    # 多条消息中匹配上的指令消息
+    match_message: str | None = None

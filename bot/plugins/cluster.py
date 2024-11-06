@@ -13,7 +13,7 @@ router = CommandRouter()
 
 @router.command("备份.*+")
 async def backup(event: Event):
-    id = event.match_text.removeprefix("备份").strip()
+    id = event.match_message.removeprefix("备份").strip()
     async with httpx.AsyncClient() as client:
         url = f"{WENDY_API}/deploy/{id}"
         response = await client.get(url)

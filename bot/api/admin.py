@@ -12,7 +12,11 @@ log = structlog.get_logger()
 async def create(
     uid: str = Body(embed=True, description="QQ号"),
 ):
-    return await models.Admin.create(uid=uid)
+    admin = await models.Admin.get_or_none(uid=uid)
+    if admin is None:
+        return await models.Admin.create(uid=uid)
+    else:
+        return admin
 
 
 @router.delete("")
