@@ -1,7 +1,5 @@
 """消息事件"""
 
-import json
-
 import structlog
 from fastapi import APIRouter, Body, BackgroundTasks
 
@@ -24,7 +22,6 @@ async def receive(
     message: dict = Body(),
 ):
     try:
-        log.info(json.dumps(message, indent=4, ensure_ascii=False))
         event = Event.model_validate(message)
         # 对于文件类型的event入库
         for item in event.message:
