@@ -37,13 +37,22 @@ async def ls():
 
 @router.command("开服.*+", limit_admin=True)
 async def create(event: Event):
-    cluster_name = event.match_message.removeprefix("开服").strip()
+    args = event.match_message.removeprefix("开服")
+    if "-" in args:
+        cluster_name, cluster_password = args.split("-")
+    else:
+        cluster_name = args
+        cluster_password = ""
+    cluster_name = cluster_name
+    cluster_password = cluster_password
     async with httpx.AsyncClient(timeout=300) as client:
         url = f"{WENDY_API}/deploy"
         post_data = {
             "cluster_token": KLEI_TOKEN,
             "ini": {
                 "cluster_name": cluster_name,
+                "max_players": 4,
+                "cluster_password": cluster_password,
             },
         }
         response = await client.post(url, json=post_data)
@@ -53,7 +62,7 @@ async def create(event: Event):
 
 @router.command("重启[0-9]+", limit_admin=True)
 async def restart(event: Event):
-    id = event.match_message.removeprefix("重启").strip()
+    id = event.match_message.removeprefix("重启")
     async with httpx.AsyncClient(timeout=300) as client:
         url = f"{WENDY_API}/deploy/restart/{id}"
         await client.get(url)
@@ -62,7 +71,7 @@ async def restart(event: Event):
 
 @router.command("关服[0-9]+", limit_admin=True)
 async def stop(event: Event):
-    id = event.match_message.removeprefix("关服").strip()
+    id = event.match_message.removeprefix("关服")
     async with httpx.AsyncClient(timeout=300) as client:
         url = f"{WENDY_API}/deploy/stop/{id}"
         await client.get(url)
@@ -71,7 +80,7 @@ async def stop(event: Event):
 
 @router.command("文件开服.*+", limit_admin=True)
 async def create_by_file(event: Event):
-    file = event.match_message.removeprefix("文件开服").strip()
+    file = event.match_message.removeprefix("文件开服")
     # 最近半小时内范围搜索
     now = datetime.datetime.now()
     constraints = {
@@ -98,7 +107,7 @@ async def create_by_file(event: Event):
 
 @router.command("回档[0-9]+-[0-9]+", limit_admin=True)
 async def rollback(event: Event):
-    args = event.match_message.removeprefix("回档").strip()
+    args = event.match_message.removeprefix("回档")
     id, days = args.split("-")
     async with httpx.AsyncClient() as client:
         response = await client.get(f"{WENDY_API}/deploy/{id}")
@@ -110,6 +119,27 @@ async def rollback(event: Event):
         # 执行回滚
         post_data = {
             "command": f"c_rollback({days})",
+            "world_name": world_name,
+        }
+        response = await client.post(
+            f"{WENDY_API}/console/command/{id}", json=post_data
+        )
+        response.raise_for_status()
+    return "OK"
+
+
+@router.command("重置[0-9]+", limit_admin=True)
+async def c_regenerateshard(event: Event):
+    id = event.match_message.removeprefix("重置")
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"{WENDY_API}/deploy/{id}")
+        response = response.json()
+        world_name = "Master"
+        for world in response["cluster"]["world"]:
+            if world["type"] == "Master":
+                world_name = world["name"]
+        post_data = {
+            "command": "c_regenerateshard()",
             "world_name": world_name,
         }
         response = await client.post(
