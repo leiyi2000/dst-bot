@@ -20,7 +20,7 @@ router = CommandRouter()
 async def ls():
     cluster_id = ""
     reply_message = "本群服务器如下: \n\n"
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         url = f"{WENDY_API}/deploy?status=running"
         response = await client.get(url)
         for cluster in response.json():
@@ -45,7 +45,7 @@ async def create(event: Event):
         cluster_password = ""
     cluster_name = cluster_name
     cluster_password = cluster_password
-    async with httpx.AsyncClient(timeout=300) as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         url = f"{WENDY_API}/deploy"
         post_data = {
             "cluster_token": KLEI_TOKEN,
@@ -63,7 +63,7 @@ async def create(event: Event):
 @router.command("重启[0-9]+", limit_admin=True)
 async def restart(event: Event):
     id = event.match_message.removeprefix("重启")
-    async with httpx.AsyncClient(timeout=300) as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         url = f"{WENDY_API}/deploy/restart/{id}"
         await client.get(url)
     return "OK"
@@ -72,7 +72,7 @@ async def restart(event: Event):
 @router.command("关服[0-9]+", limit_admin=True)
 async def stop(event: Event):
     id = event.match_message.removeprefix("关服")
-    async with httpx.AsyncClient(timeout=300) as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         url = f"{WENDY_API}/deploy/stop/{id}"
         await client.get(url)
     return "OK"
@@ -109,7 +109,7 @@ async def create_by_file(event: Event):
 async def rollback(event: Event):
     args = event.match_message.removeprefix("回档")
     id, days = args.split("-")
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         response = await client.get(f"{WENDY_API}/deploy/{id}")
         response = response.json()
         world_name = "Master"
@@ -131,7 +131,7 @@ async def rollback(event: Event):
 @router.command("重置[0-9]+", limit_admin=True)
 async def c_regenerateshard(event: Event):
     id = event.match_message.removeprefix("重置")
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=600) as client:
         response = await client.get(f"{WENDY_API}/deploy/{id}")
         response = response.json()
         world_name = "Master"
