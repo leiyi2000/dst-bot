@@ -53,6 +53,7 @@ async def create(event: Event):
                 "cluster_name": cluster_name,
                 "max_players": 4,
                 "cluster_password": cluster_password,
+                "cluster_description": "QQ群: 908262651",
             },
         }
         response = await client.post(url, json=post_data)
